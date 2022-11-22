@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0; }
+
+#map {
+  width: 400px;
+  height: 400px; }
+
+.container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; }
+
+.nav {
+  max-width: 200px;
+  width: 100%;
+  margin-right: 20px; }
+  .nav .enterRoute {
+    width: 100%; }
+  .nav .routes {
+    width: 100%; }
+    .nav .routes .route {
+      width: 200px;
+      padding: 6px;
+      box-sizing: border-box;
+      margin: 6px 0;
+      border: 1px solid;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer; }
+    .nav .routes .route:active {
+      cursor: grabbing; }
+
+/*# sourceMappingURL=style.css.map */
