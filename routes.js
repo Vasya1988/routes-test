@@ -31,6 +31,7 @@ class Routes {
         // Run functions
         this.manageHTML()
         this.setEvents()
+        this.setParameters()
     }
 
     manageHTML() {
@@ -65,7 +66,8 @@ class Routes {
     }
 
     setParameters() {
-
+        // Начало движения для tranform translateY
+        this.y = 0;
     }
 
     setEvents() {
@@ -116,29 +118,32 @@ class Routes {
     }
 
     startDrag() {
-        this.clickRoute = event
+        event.stopPropagation()
+        // Начало клика, координаты оси Y
         this.clickY = event.pageY
+        // Нода маршрута, который будем двигать
         this.routeNode = event.target
+        // Начало
+        // this.startY = this.y
         console.log('Start drag --> ', this.clickY)
-        console.log(event.target)
+        // console.log(event.target)
         window.addEventListener('pointermove', this.dragging)
     }
-    dragging() {
-        this.moving = event.pageY
-        console.log('Moving --> ', this.moving)
-        this.shift = this.moving - this.clickY
+    dragging(evn) {
+        this.moving = evn.pageY
+        // console.log('Moving --> ', this.moving)
+        this.shift = (this.moving - this.clickY);
+        // this.y = this.shift + this.startY
         this.setStylePosition(this.shift)
         
     }
     stopDrag() {
         this.endDrag = event.pageY
         window.removeEventListener('pointermove', this.dragging)
-        console.log('The remove is done')
         console.log('End drag', this.endDrag)
-        console.log('Shift is stop --> ', this.shift)
     }
     setStylePosition(shift) {
-        this.routeNode.style.transform = `translateY(${shift}px)`
+        this.routeNode.style.transform = `translateY(${shift}px)`;
     }
 
 }
