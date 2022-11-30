@@ -28,7 +28,12 @@
       border-radius: 10px;
       display: flex;
       justify-content: space-between;
-      cursor: pointer; }
+      cursor: pointer;
+      touch-action: none; }
+    .nav .routes .route--active-up {
+      opacity: 0.3; }
+    .nav .routes .route--active-down {
+      opacity: 0.3; }
     .nav .routes .route:active {
       cursor: grabbing; }
 

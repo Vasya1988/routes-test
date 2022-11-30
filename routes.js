@@ -5,7 +5,9 @@ const classes = {
     classMap: 'map',
     enterRoute: 'enterRoute',
     routes: 'routes',
-    route: 'route'
+    route: 'route',
+    activeUp: 'route--active-up',
+    activeDown: 'route--active-down'
 }
 
 class Routes {
@@ -14,7 +16,10 @@ class Routes {
         this.container = element
 
         // Array with routes
-        this.routesArray = ['Пушкино', 'Москва']
+        this.routesArray = ['Пушкино', 'Москва', 'Подольск']
+
+        this.dragCurrentRoute = null;
+        this.dropCurrentRoute = null;
 
         // Bind functions
         this.manageHTML = this.manageHTML.bind(this)
@@ -24,9 +29,11 @@ class Routes {
         this.setParameters = this.setParameters.bind(this)
         this.changeRoutes = this.changeRoutes.bind(this)
         this.startDrag = this.startDrag.bind(this)
-        this.dragging = this.dragging.bind(this)
         this.stopDrag = this.stopDrag.bind(this)
+        this.dragEnter = this.dragEnter.bind(this)
+        this.dragLeave = this.dragLeave.bind(this)
         this.setStylePosition = this.setStylePosition.bind(this)
+        this.dragMoving = this.dragMoving.bind(this)
 
         // Run functions
         this.manageHTML()
@@ -68,14 +75,20 @@ class Routes {
     setParameters() {
         // Начало движения для tranform translateY
         this.y = 0;
+        // this.routeNode = Array.from(this.routesNode.children);
     }
 
     setEvents() {
         // Get input value of route
         this.enterRouteNode.addEventListener('change', this.addRoute)
 
-        this.routesNode.addEventListener('pointerdown', this.startDrag)
+        this.routeNode = Array.from(this.routesNode.children)
+        this.routeNode.map((route, index) => {
+            this.startIndex = index
+            route.addEventListener('pointerdown', this.startDrag)
+        })
         window.addEventListener('pointerup', this.stopDrag)
+
     }
 
     // Render of the map on the page
@@ -118,34 +131,52 @@ class Routes {
     }
 
     startDrag() {
-        event.stopPropagation()
-        // Начало клика, координаты оси Y
-        this.clickY = event.pageY
-        // Нода маршрута, который будем двигать
-        this.routeNode = event.target
-        // Начало
-        // this.startY = this.y
-        console.log('Start drag --> ', this.clickY)
-        // console.log(event.target)
-        window.addEventListener('pointermove', this.dragging)
-    }
-    dragging(evn) {
-        this.moving = evn.pageY
-        // console.log('Moving --> ', this.moving)
-        this.shift = (this.moving - this.clickY);
-        // this.y = this.shift + this.startY
-        this.setStylePosition(this.shift)
-        
+        this.dragCurrentRoute = {route: event.target, index: this.routeNode.indexOf(event.target)}
+
+        this.startClick = event.pageY
+        console.log('Start drag --> ', this.dragCurrentRoute);
+        this.routeNode.map((item) => {
+            console.log()
+            if (event.target !== item) {
+                item.addEventListener('pointerenter', this.dragEnter)
+                item.addEventListener('pointerleave', this.dragLeave)
+            }
+            window.addEventListener('pointermove', this.dragMoving)
+        })
     }
     stopDrag() {
-        this.endDrag = event.pageY
-        window.removeEventListener('pointermove', this.dragging)
-        console.log('End drag', this.endDrag)
+        
+        if (event.target.parentNode === this.routesNode) {
+            console.log('Stop drag --> ', this.dropCurrentRoute)
+        }
+        Array.from(this.routesNode.children).map((item) => {
+            item.removeEventListener('pointerenter', this.dragEnter)
+            item.removeEventListener('pointerleave', this.dragLeave)
+        })
+        event.target.classList.remove(classes.activeUp)
+        window.removeEventListener('pointermove', this.dragMoving)
+        this.setStylePosition(0)
+    }
+    dragEnter() {
+        this.dropCurrentRoute = {route: event.target, index: this.routeNode.indexOf(event.target)}
+        console.log('DragEnter -->', this.dropCurrentRoute)
+
+        event.target.classList.add(classes.activeUp)
+    }
+    dragLeave() {
+        event.target.classList.remove(classes.activeUp)
+        // console.log('dragLeave --> ', event.target)
+    }
+    dragMoving() {
+        this.move = event.pageY
+        this.shift = this.move - this.startClick
+        console.log(this.move)
+        this.setStylePosition(this.shift)
     }
     setStylePosition(shift) {
-        this.routeNode.style.transform = `translateY(${shift}px)`;
+        console.log(this.dragCurrentRoute.route)
+        this.dragCurrentRoute.route.style.transform = `translateY(${shift}px)`
     }
-
 }
 
 // ----------- Helpers
