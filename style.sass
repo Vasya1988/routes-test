@@ -17,7 +17,8 @@
         width: 100%
     .routes
         width: 100%
-        .route
+        .route, .routeClone
+            // position: relative
             width: 200px
             padding: 6px
             box-sizing: border-box
@@ -28,6 +29,8 @@
             justify-content: space-between
             cursor: pointer
             touch-action: none
+            background-color: #fff
+            user-select: none
         .route--active-up
             opacity: .3
         .route--active-down

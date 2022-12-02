@@ -19,7 +19,7 @@
     width: 100%; }
   .nav .routes {
     width: 100%; }
-    .nav .routes .route {
+    .nav .routes .route, .nav .routes .routeClone {
       width: 200px;
       padding: 6px;
       box-sizing: border-box;
@@ -29,7 +29,9 @@
       display: flex;
       justify-content: space-between;
       cursor: pointer;
-      touch-action: none; }
+      touch-action: none;
+      background-color: #fff;
+      user-select: none; }
     .nav .routes .route--active-up {
       opacity: 0.3; }
     .nav .routes .route--active-down {

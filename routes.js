@@ -32,8 +32,7 @@ class Routes {
         this.stopDrag = this.stopDrag.bind(this)
         this.dragEnter = this.dragEnter.bind(this)
         this.dragLeave = this.dragLeave.bind(this)
-        this.setStylePosition = this.setStylePosition.bind(this)
-        this.dragMoving = this.dragMoving.bind(this)
+        this.changeDragList = this.changeDragList.bind(this)
 
         // Run functions
         this.manageHTML()
@@ -84,10 +83,12 @@ class Routes {
 
         this.routeNode = Array.from(this.routesNode.children)
         this.routeNode.map((route, index) => {
-            this.startIndex = index
-            route.addEventListener('pointerdown', this.startDrag)
+            route.addEventListener('dragstart', this.startDrag)
+            
         })
-        window.addEventListener('pointerup', this.stopDrag)
+        // window.addEventListener('dragenter', this.dragEnter)
+        // window.addEventListener('dragleave', this.dragLeave)
+        window.addEventListener('dragend', this.stopDrag)
 
     }
 
@@ -131,127 +132,65 @@ class Routes {
     }
 
     startDrag() {
-        this.dragCurrentRoute = {route: event.target, index: this.routeNode.indexOf(event.target)}
-
-        this.startClick = event.pageY
-        console.log('Start drag --> ', this.dragCurrentRoute);
-        this.routeNode.map((item) => {
-            console.log()
-            if (event.target !== item) {
-                item.addEventListener('pointerenter', this.dragEnter)
-                item.addEventListener('pointerleave', this.dragLeave)
+        this.currentList = this.changeDragList()
+        console.log('start current list --> ', this.currentList)
+        this.dragCurrentRoute = {route: event.currentTarget, index: this.routeNode.indexOf(event.target)}
+        this.routeNode.map((route) => {
+            if (route != event.target) {
+                route.addEventListener('dragenter', this.dragEnter)
+                route.addEventListener('dragleave', this.dragLeave)
             }
-            window.addEventListener('pointermove', this.dragMoving)
         })
+        console.log('Start drag --> ', this.dragCurrentRoute);
     }
     stopDrag() {
-        
         if (event.target.parentNode === this.routesNode) {
             console.log('Stop drag --> ', this.dropCurrentRoute)
         }
         Array.from(this.routesNode.children).map((item) => {
-            item.removeEventListener('pointerenter', this.dragEnter)
-            item.removeEventListener('pointerleave', this.dragLeave)
+            item.removeEventListener('dragenter', this.dragEnter)
+            item.removeEventListener('dragleave', this.dragLeave)
         })
-        event.target.classList.remove(classes.activeUp)
-        window.removeEventListener('pointermove', this.dragMoving)
-        this.setStylePosition(0)
+
+        if (this.dropCurrentRoute != null) {
+            const children = Array.from(this.dropCurrentRoute.route.parentElement.children);
+            const draggIndex = children.indexOf(this.dragCurrentRoute.route);
+            const dropIndex = children.indexOf(this.dropCurrentRoute.route);
+
+            if (draggIndex > dropIndex) {
+                this.dragCurrentRoute.route.parentElement.insertBefore(this.dragCurrentRoute.route, this.dropCurrentRoute.route)
+    
+            } else {
+                this.dragCurrentRoute.route.parentElement.insertBefore(this.dragCurrentRoute.route, this.dropCurrentRoute.route.nextElementSibling)
+            }
+            
+            console.log('End current list --> ', this.changeDragList())
+        }        
+    }
+    changeDragList() {
+        const list = document.querySelectorAll('.route')
+        console.log('New route --> ', list)
+        return Array.from(list)
     }
     dragEnter() {
-        this.dropCurrentRoute = {route: event.target, index: this.routeNode.indexOf(event.target)}
-        console.log('DragEnter -->', this.dropCurrentRoute)
-
+        console.log('DragEnter -->', event.target)
         event.target.classList.add(classes.activeUp)
+        this.dropCurrentRoute = {route: event.target, index: this.routeNode.indexOf(event.target)}
     }
     dragLeave() {
         event.target.classList.remove(classes.activeUp)
-        // console.log('dragLeave --> ', event.target)
-    }
-    dragMoving() {
-        this.move = event.pageY
-        this.shift = this.move - this.startClick
-        console.log(this.move)
-        this.setStylePosition(this.shift)
-    }
-    setStylePosition(shift) {
-        console.log(this.dragCurrentRoute.route)
-        this.dragCurrentRoute.route.style.transform = `translateY(${shift}px)`
+        console.log('dragLeave --> ', event.target)
     }
 }
 
 // ----------- Helpers
 const routeMarkup = (name) => {
     return `
-        <div class="route">
-        <span>${name}</span>
-        <button>Close</button>
+        <div class="route" draggable="true">
+            <span>${name}</span>
+            <button>Close</button>
         </div>
     `
 }
 
 
-// const mapId = document.getElementById(classes.mapId);
-// // console.info(mapId)
-// const enterRouteNode = document.querySelector(`.${classes.enterRoute}`)
-// const routesNode = document.querySelector(`.${classes.routes}`)
-
-// // Array with routes
-// const routesArray = []
-
-// // Route html markup
-// const routeMarkup = (name) => {
-//     return `
-//         <div class="route">
-//         <span>${name}</span>
-//         <button>Close</button>
-//         </div>
-//     `
-// }
-
-// // Render of the map on the page
-// const mapRender = () => {
-
-//     ymaps.ready(() => {
-
-//         let myMap = new ymaps.Map(classes.mapId, {
-//             center: [55.76, 37.57],
-//             zoom: 9,
-//             controls: []
-//         })
-
-//         let multiRoute = new ymaps.multiRouter.MultiRoute(
-//             {
-//                 referencePoints: routesArray
-//             },
-//             {
-//                 boundsAutoApply: true
-//             }
-//         )
-
-//         myMap.geoObjects.add(multiRoute)
-//     })
-// }
-
-// mapRender()
-
-// // Add route form input
-// const addRoutes = () => {
-//     routesArray.push(event.target.value)
-//     routesNode.insertAdjacentHTML('beforeend', routeMarkup(event.target.value))
-//     event.target.value = ''
-//     console.log(routesArray)
-//     changeRoutes()
-// }
-
-// const changeRoutes = () => {
-//     if (routesArray.length > 1) {
-//         mapId.innerHTML = '';
-//         mapRender()
-//     }
-// }
-
-
-
-
-// enterRouteNode.addEventListener('change', addRoutes)
-// routesNode.innerHTML = routesArray.map((name) => {routeMarkup(name)})
