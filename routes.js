@@ -7,7 +7,8 @@ const classes = {
     routes: 'routes',
     route: 'route',
     activeUp: 'route--active-up',
-    activeDown: 'route--active-down'
+    activeDown: 'route--active-down',
+    placeholder: 'placeHolder'
 }
 
 class Routes {
@@ -21,6 +22,13 @@ class Routes {
         this.dragCurrentRoute = null;
         this.dropCurrentRoute = null;
 
+        this.startClick = null;
+        this.shiftX = null;
+        this.shiftY = null;
+
+        // Ссылка, куда будем скидывать перетаскиваемый элемент
+        this.currentDroppAble = null;
+
         // Bind functions
         this.manageHTML = this.manageHTML.bind(this)
         this.mapRender = this.mapRender.bind(this)
@@ -28,7 +36,7 @@ class Routes {
         this.addRoute = this.addRoute.bind(this)
         this.setParameters = this.setParameters.bind(this)
         this.changeRoutes = this.changeRoutes.bind(this)
-        this.startDrag = this.startDrag.bind(this)
+        this.dragStart = this.dragStart.bind(this)
         this.stopDrag = this.stopDrag.bind(this)
         this.dragEnter = this.dragEnter.bind(this)
         this.dragLeave = this.dragLeave.bind(this)
@@ -80,16 +88,11 @@ class Routes {
     setEvents() {
         // Get input value of route
         this.enterRouteNode.addEventListener('change', this.addRoute)
-
         this.routeNode = Array.from(this.routesNode.children)
         this.routeNode.map((route, index) => {
-            route.addEventListener('dragstart', this.startDrag)
-            
+            route.addEventListener('pointerdown', this.startDrag)
         })
-        // window.addEventListener('dragenter', this.dragEnter)
-        // window.addEventListener('dragleave', this.dragLeave)
-        window.addEventListener('dragend', this.stopDrag)
-
+        window.addEventListener('pointerup', this.stopDrag)
     }
 
     // Render of the map on the page
@@ -131,66 +134,46 @@ class Routes {
         }
     }
 
-    startDrag() {
-        this.currentList = this.changeDragList()
-        console.log('start current list --> ', this.currentList)
-        this.dragCurrentRoute = {route: event.currentTarget, index: this.routeNode.indexOf(event.target)}
-        this.routeNode.map((route) => {
-            if (route != event.target) {
-                route.addEventListener('dragenter', this.dragEnter)
-                route.addEventListener('dragleave', this.dragLeave)
-            }
-        })
-        console.log('Start drag --> ', this.dragCurrentRoute);
-    }
-    stopDrag() {
-        if (event.target.parentNode === this.routesNode) {
-            console.log('Stop drag --> ', this.dropCurrentRoute)
-        }
-        Array.from(this.routesNode.children).map((item) => {
-            item.removeEventListener('dragenter', this.dragEnter)
-            item.removeEventListener('dragleave', this.dragLeave)
-        })
+    // Event pointerdown
+    dragStart() {
+        this.startClick = event;
 
-        if (this.dropCurrentRoute != null) {
-            const children = Array.from(this.dropCurrentRoute.route.parentElement.children);
-            const draggIndex = children.indexOf(this.dragCurrentRoute.route);
-            const dropIndex = children.indexOf(this.dropCurrentRoute.route);
+        // Заменяем на тот, по которому кликнули
+        this.startClick.target.replaceWith(createPlaceholderNode);
 
-            if (draggIndex > dropIndex) {
-                this.dragCurrentRoute.route.parentElement.insertBefore(this.dragCurrentRoute.route, this.dropCurrentRoute.route)
-    
-            } else {
-                this.dragCurrentRoute.route.parentElement.insertBefore(this.dragCurrentRoute.route, this.dropCurrentRoute.route.nextElementSibling)
-            }
-            
-            console.log('End current list --> ', this.changeDragList())
-        }        
+        // Берем координаты Placeholder от верхнего левого угла
+        let coordinatesOfPlaceholder = document.elementFromPoint(event.pageX, event.pageY).getBoundingClientRect();
+
+        // Из расстояния от мыши до экрана (clientY/X)
+        // Вычитаем координаты из Placeholder
+        // Что бы курсор не сдвигался в центр перетаскиваемого элемента
+        shiftX = event.clientX - coordinatesOfPlaceholder.left;
+        shiftY = event.clientY - coordinatesOfPlaceholder.top;
+
+        // Настраиваем движущийся элемент и добавляем в body
+        this.startClick.target.style.position = 'absolute';
+        this.startClick.target.style.zIndex = 1000;
+        document.body.append(startClick.target);
     }
-    changeDragList() {
-        const list = document.querySelectorAll('.route')
-        console.log('New route --> ', list)
-        return Array.from(list)
-    }
-    dragEnter() {
-        console.log('DragEnter -->', event.target)
-        event.target.classList.add(classes.activeUp)
-        this.dropCurrentRoute = {route: event.target, index: this.routeNode.indexOf(event.target)}
-    }
-    dragLeave() {
-        event.target.classList.remove(classes.activeUp)
-        console.log('dragLeave --> ', event.target)
-    }
+
 }
 
 // ----------- Helpers
 const routeMarkup = (name) => {
     return `
-        <div class="route" draggable="true">
+        <div class="route" >
             <span>${name}</span>
             <button>Close</button>
         </div>
     `
+}
+
+// Создаем элемент Placeholder
+const createPlaceholderNode = () => {
+    const placeholderNode = document.createElement('div');
+    placeholderNode.classList.add(classes.placeholder);
+
+    return placeholderNode
 }
 
 
