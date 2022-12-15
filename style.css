@@ -19,24 +19,27 @@
     width: 100%; }
   .nav .routes {
     width: 100%; }
-    .nav .routes .route, .nav .routes .routeClone {
-      width: 200px;
-      padding: 6px;
-      box-sizing: border-box;
-      margin: 6px 0;
-      border: 1px solid;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      cursor: pointer;
-      touch-action: none;
-      background-color: #fff;
-      user-select: none; }
-    .nav .routes .route--active-up {
-      opacity: 0.3; }
-    .nav .routes .route--active-down {
-      opacity: 0.3; }
-    .nav .routes .route:active {
-      cursor: grabbing; }
+
+.route, .routeClone {
+  width: 200px;
+  height: 31px;
+  padding: 6px;
+  box-sizing: border-box;
+  margin: 6px 0;
+  border: 1px solid;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  touch-action: none;
+  background-color: #fff;
+  user-select: none; }
+
+.placeholder {
+  width: 200px;
+  height: 31px;
+  background-color: #ebebeb;
+  border-radius: 10px;
+  margin: 6px 0; }
 
 /*# sourceMappingURL=style.css.map */
