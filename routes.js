@@ -22,15 +22,8 @@ class Routes {
         this.dragCurrentRoute = null;
         this.dropCurrentRoute = null;
 
-        // // this.startClick.target = null;
-        // this.shiftX = null;
-        // this.shiftY = null;
-
-        
-        
-        // // Ссылка, куда будем скидывать перетаскиваемый элемент
-        // this.currentDroppAble = null;
-        // this.placeholderNode = null;
+        // Ссылка, куда будем скидывать перетаскиваемый элемент
+        this.currentDroppAble = null
 
         // Bind functions
         this.manageHTML = this.manageHTML.bind(this)
@@ -139,34 +132,31 @@ class Routes {
     dragStart(event) {
         this.startClick = event;
 
+        // Берем координаты event от верхнего левого угла
+        this.coordinatesEvent = event.target.getBoundingClientRect()
+
+        // Создаем элемент Placeholder
         this.placeholderNode = document.createElement('div')
         this.placeholderNode.classList.add(classes.placeholder)
 
         // Заменяем на тот, по которому кликнули
         this.startClick.target.replaceWith(this.placeholderNode)
 
-        this.currentDroppAble = null
-        
-        // Берем координаты Placeholder от верхнего левого угла
-        this.coordinatesOfPlaceholder = document.elementFromPoint(event.pageX, event.pageY).getBoundingClientRect()
-
         // Из расстояния от мыши до экрана (clientY/X)
         // Вычитаем координаты из Placeholder
         // Что бы курсор не сдвигался в центр перетаскиваемого элемента
-        this.shiftX = event.clientX - this.coordinatesOfPlaceholder.left
-        this.shiftY = event.clientY - this.coordinatesOfPlaceholder.top
+        this.shiftX = event.clientX - this.coordinatesEvent.left
+        this.shiftY = event.clientY - this.coordinatesEvent.top
 
         // Настраиваем движущийся элемент и добавляем в body
         this.startClick.target.style.position = 'absolute'
         this.startClick.target.style.zIndex = 1000
-
-        this.startClick.target.style 
         document.body.append(this.startClick.target)
 
-        // Задаем координаты из Placehholder элементу, который двигаем
+        // Задаем координаты элементу, который двигаем
         // Что бы его top и left не ушли в ноль, после смены position на absolute
-        this.startClick.target.style.left = `${this.coordinatesOfPlaceholder.x}px`
-        this.startClick.target.style.top = `${this.coordinatesOfPlaceholder.y}px`
+        this.startClick.target.style.left = `${this.coordinatesEvent.x}px`
+        this.startClick.target.style.top = `${this.coordinatesEvent.y}px`
 
         console.log('Start --> ', event.target)
 
