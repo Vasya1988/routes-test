@@ -8,7 +8,8 @@ const classes = {
     route: 'route',
     activeUp: 'route--active-up',
     activeDown: 'route--active-down',
-    placeholder: 'placeholder'
+    placeholder: 'placeholder',
+    buttonClose: 'close'
 }
 
 class Routes {
@@ -36,8 +37,8 @@ class Routes {
         this.dropped = this.dropped.bind(this)
         this.moveAt = this.moveAt.bind(this)
         this.moving = this.moving.bind(this)
-        
-    
+        this.dropOnElement = this.dropOnElement.bind(this)
+        this.replaceRoutes = this.replaceRoutes.bind(this)
 
         // Run functions
         this.manageHTML()
@@ -85,9 +86,12 @@ class Routes {
         this.enterRouteNode.addEventListener('change', this.addRoute)
         this.routeNode = Array.from(this.routesNode.children)
         this.routeNode.map((route, index) => {
+            this.index = index
             route.addEventListener('pointerdown', this.dragStart)
             route.addEventListener('pointerup', this.dropped)
         })
+        window.addEventListener('pointercancel', this.dropped)
+        console.log('Set events')
     }
 
     // Render of the map on the page
@@ -119,6 +123,7 @@ class Routes {
         this.routesNode.insertAdjacentHTML('beforeend', routeMarkup(event.target.value))
         event.target.value = ''
         this.changeRoutes()
+        this.setEvents()
         console.log(this.routesArray)
     }
 
@@ -126,11 +131,18 @@ class Routes {
         if (this.routesArray.length > 1) {
             this.mapIdNode.innerHTML = '';
             this.mapRender()
+            
         }
     }
 
     dragStart(event) {
+        if (event.target.className === 'close') return
+        // if (event.pageY < event.target.getBoundingClientRect().top + 6) return
+
         this.startClick = event;
+        this.flag = false
+
+        // console.log(event.pageY, event.target.getBoundingClientRect().top)
 
         // Берем координаты event от верхнего левого угла
         this.coordinatesEvent = event.target.getBoundingClientRect()
@@ -138,6 +150,10 @@ class Routes {
         // Создаем элемент Placeholder
         this.placeholderNode = document.createElement('div')
         this.placeholderNode.classList.add(classes.placeholder)
+
+        // Получаем индекс от event.target
+        this.eventIndex = Array.from(event.target.parentNode.children).indexOf(event.target);
+        console.log('Start INDEX --> ', this.eventIndex)
 
         // Заменяем на тот, по которому кликнули
         this.startClick.target.replaceWith(this.placeholderNode)
@@ -158,7 +174,7 @@ class Routes {
         this.startClick.target.style.left = `${this.coordinatesEvent.x}px`
         this.startClick.target.style.top = `${this.coordinatesEvent.y}px`
 
-        console.log('Start --> ', event.target)
+        console.log('Start --> ', event.currentTarget)
 
         document.addEventListener('pointermove', this.moving)
     }
@@ -194,20 +210,25 @@ class Routes {
             // Если уже были и ушли, удаляем действия
             if (this.currentDroppAble) {
                 console.log('We leave')
-
             }
             // Если нашли нужный элемент, добавляем в currentDroppAble
             this.currentDroppAble = droppableBelow
             // Если только зашли на элемента для dropp
             if (this.currentDroppAble) {
+                
+                // Индекс элемента на который будем дропать
+                this.droppableBelowIndex = Array.from(droppableBelow.parentNode.children).indexOf(droppableBelow);
+                
                 console.log('We came')
-
+                console.log(this.eventIndex, this.droppableBelowIndex, this.flag)
+                this.dropOnElement(this.eventIndex, this.droppableBelowIndex)
             }
         }
     }
 
     // Ф-я для event Pointerup
     dropped() {
+        if (!this.startClick) return
         document.removeEventListener('pointermove', this.moving)
         // Если не было dropp, возвращаем элемент на место
         this.placeholderNode.replaceWith(this.startClick.target)
@@ -216,6 +237,34 @@ class Routes {
         this.startClick.target.style.left = '0'
 
         this.placeholderNode.remove()
+        this.replaceRoutes(this.startClick.target)
+    }
+
+    dropOnElement(drag, drop) {
+        
+        if (drag < drop) {
+            this.flag = true
+            // console.log(drag, drop)
+            this.currentDroppAble.insertAdjacentElement('afterend', this.placeholderNode)
+            this.eventIndex = this.eventIndex + 1
+
+        } 
+        if (drag > drop) {
+            this.currentDroppAble.insertAdjacentElement('beforebegin', this.placeholderNode)
+            this.eventIndex = this.eventIndex - 1
+        }
+        if (drag === drop) {
+            this.currentDroppAble.insertAdjacentElement('beforebegin', this.placeholderNode)
+        }
+    }
+    replaceRoutes(event) {
+        this.routesArray = [];
+        let newRoute = Array.from(event.parentNode.children)
+        newRoute.map((e) => {
+            this.routesArray.push(e.children[0].innerText)
+        })
+        console.log(this.routesArray)
+        this.changeRoutes()
     }
 
 }
@@ -225,17 +274,9 @@ const routeMarkup = (name) => {
     return `
         <div class="route" >
             <span>${name}</span>
-            <button>Close</button>
+            <button class="close" >Close</button>
         </div>
     `
-}
-
-// Создаем элемент Placeholder
-const createPlaceholderNode = () => {
-    const placeholderNode = document.createElement('div');
-    placeholderNode.classList.add(classes.placeholder);
-
-    return placeholderNode
 }
 
 
