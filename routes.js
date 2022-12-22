@@ -87,10 +87,13 @@ class Routes {
         document.querySelectorAll('.close').forEach((item) => {
             item.addEventListener('click', this.deleteRoute)
         })
-        document.querySelectorAll('.routeValue').forEach((item) => {
+        document.querySelectorAll('.routeValue').forEach((item, index) => {
             item.addEventListener('change', (e) => {
-                console.log(e)
-                this.replaceRoutes()
+                if (e.target.value !== this.routesArray[index]) {
+                    // console.log(e.target.value, index)
+                    // console.log(this.routesArray[index])
+                    this.replaceRoutes()
+                }
             })
         })
         window.addEventListener('pointercancel', this.dropped)
