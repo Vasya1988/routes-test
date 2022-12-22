@@ -18,28 +18,46 @@
   .nav .enterRoute {
     width: 100%; }
   .nav .routes {
-    width: 100%; }
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end; }
 
 .route, .routeClone {
   width: 200px;
-  height: 31px;
-  padding: 6px;
-  box-sizing: border-box;
-  margin: 6px 0;
-  border: 1px solid;
-  border-radius: 10px;
   display: flex;
   justify-content: space-between;
-  cursor: pointer;
-  touch-action: none;
-  background-color: #fff;
-  user-select: none;
-  transition: all 0.35s ease 0s; }
-  .route span, .routeClone span {
+  align-items: center;
+  cursor: grab; }
+  .route .dragZone, .routeClone .dragZone {
+    width: 10%;
+    height: 6px;
+    border-top: 2px solid;
+    border-bottom: 2px solid;
     pointer-events: none; }
+  .route .dragZone:hover, .routeClone .dragZone:hover {
+    cursor: grab; }
+  .route .routeZone, .routeClone .routeZone {
+    width: 80%;
+    height: 31px;
+    padding: 6px;
+    box-sizing: border-box;
+    margin: 6px 0;
+    border: 1px solid;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    touch-action: none;
+    background-color: #fff;
+    user-select: none;
+    transition: all 0.35s ease 0s; }
+  .route input, .routeClone input {
+    width: 100%;
+    border: none; }
 
 .placeholder {
-  width: 200px;
+  width: 80%;
   height: 31px;
   background-color: #ebebeb;
   border-radius: 10px;

@@ -7,7 +7,6 @@
 .container
     display: flex
     justify-content: center
-    // align-items: center
     margin-top: 20px
 .nav
     max-width: 200px
@@ -17,26 +16,48 @@
         width: 100%
     .routes
         width: 100%
+        display: flex
+        flex-wrap: wrap
+        justify-content: flex-end
 .route, .routeClone,
-    // position: relative
     width: 200px
-    height: 31px
-    padding: 6px
-    box-sizing: border-box
-    margin: 6px 0
-    border: 1px solid
-    border-radius: 10px
     display: flex
     justify-content: space-between
-    cursor: pointer
-    touch-action: none
-    background-color: #fff
-    user-select: none
-    transition: all 0.35s ease 0s
-    span
+    align-items: center
+    // position: relative
+    cursor: grab
+    .dragZone
+        width: 10%
+        height: 6px
+        border-top: 2px solid
+        border-bottom: 2px solid
         pointer-events: none
+        
+    .dragZone:hover
+        cursor: grab
+    .routeZone
+        width: 80%
+        height: 31px
+        padding: 6px
+        box-sizing: border-box
+        margin: 6px 0
+        border: 1px solid
+        border-radius: 10px
+        display: flex
+        justify-content: space-between
+        cursor: pointer
+        touch-action: none
+        background-color: #fff
+        user-select: none
+        transition: all 0.35s ease 0s
+    .routeInput
+    input
+        width: 100%
+        border: none
+        // pointer-events: none
+        
 .placeholder
-    width: 200px
+    width: 80%
     height: 31px
     background-color: #ebebeb
     border-radius: 10px

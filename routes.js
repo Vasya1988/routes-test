@@ -11,17 +11,15 @@ const classes = {
     placeholder: 'placeholder',
     buttonClose: 'close'
 }
-
 class Routes {
     constructor(element, option = {}) {
 
         this.container = element
 
         // Array with routes
-        this.routesArray = ['Пушкино', 'Москва', 'Подольск']
+        this.routesArray = [] // 'Пушкино', 'Москва', 'Подольск'
 
-        this.dragCurrentRoute = null;
-        this.dropCurrentRoute = null;
+        this.ifRoutesHaveChanged = false
 
         // Ссылка, куда будем скидывать перетаскиваемый элемент
         this.currentDroppAble = null
@@ -39,13 +37,13 @@ class Routes {
         this.moving = this.moving.bind(this)
         this.dropOnElement = this.dropOnElement.bind(this)
         this.replaceRoutes = this.replaceRoutes.bind(this)
+        this.deleteRoute = this.deleteRoute.bind(this)
 
         // Run functions
         this.manageHTML()
         this.setEvents()
         this.setParameters()
     }
-
     manageHTML() {
         this.container.innerHTML = 
             `
@@ -76,11 +74,8 @@ class Routes {
             })
         }
     }
-
     setParameters() {
-        
     }
-
     setEvents() {
         // Get input value of route
         this.enterRouteNode.addEventListener('change', this.addRoute)
@@ -88,9 +83,18 @@ class Routes {
         this.routeNode.map((route, index) => {
             this.index = index
             route.addEventListener('pointerdown', this.dragStart)
-            route.addEventListener('pointerup', this.dropped)
+        })
+        document.querySelectorAll('.close').forEach((item) => {
+            item.addEventListener('click', this.deleteRoute)
+        })
+        document.querySelectorAll('.routeValue').forEach((item) => {
+            item.addEventListener('change', (e) => {
+                console.log(e)
+                this.replaceRoutes()
+            })
         })
         window.addEventListener('pointercancel', this.dropped)
+
         console.log('Set events')
     }
 
@@ -116,7 +120,7 @@ class Routes {
             myMap.geoObjects.add(multiRoute)
         })
     }
-    
+
     // Add route form input
     addRoute() {
         this.routesArray.push(event.target.value)
@@ -126,23 +130,33 @@ class Routes {
         this.setEvents()
         console.log(this.routesArray)
     }
-
+    // Обновляем маршруты на карте
     changeRoutes() {
-        if (this.routesArray.length > 1) {
-            this.mapIdNode.innerHTML = '';
-            this.mapRender()
-            
-        }
+        this.mapIdNode.innerHTML = '';
+        this.mapRender();
     }
-
+    // Событие pointerdown
     dragStart(event) {
-        if (event.target.className === 'close') return
-        // if (event.pageY < event.target.getBoundingClientRect().top + 6) return
+        // Если на кнопку удалить маршрут, удаляем событие pointerup, что бы ренедр карты не задваивался, потому что ф-я обновления маршрута есть в pointerup и button delete
+        if (
+            event.target.className === 'close' || 
+            event.target.className === 'routeValue' ||
+            event.target.className === 'routeZone'
+        )  {
+            this.routeNode.map((route, index) => {
+                route.removeEventListener('pointerup', this.dropped)
+            })
+            return
+        }
+        console.log(event.target)
+        // Добавляем 6px, при клике в верхней части блока с маршрутом, мышка может выходить за пределы блока (из-за margin 6px), когда это происходит, отменяем все дальнейшие события
+        if (event.pageY < event.target.getBoundingClientRect().top + 6) return
 
+        // Добавляем событие Pointerup
+        event.target.addEventListener('pointerup', this.dropped)
         this.startClick = event;
-        this.flag = false
-
-        // console.log(event.pageY, event.target.getBoundingClientRect().top)
+        this.startClick.target.style.cursor = 'grabbing'
+        this.ifRoutesHaveChanged = false
 
         // Берем координаты event от верхнего левого угла
         this.coordinatesEvent = event.target.getBoundingClientRect()
@@ -153,7 +167,7 @@ class Routes {
 
         // Получаем индекс от event.target
         this.eventIndex = Array.from(event.target.parentNode.children).indexOf(event.target);
-        console.log('Start INDEX --> ', this.eventIndex)
+        // console.log('Start INDEX --> ', this.eventIndex)
 
         // Заменяем на тот, по которому кликнули
         this.startClick.target.replaceWith(this.placeholderNode)
@@ -174,17 +188,15 @@ class Routes {
         this.startClick.target.style.left = `${this.coordinatesEvent.x}px`
         this.startClick.target.style.top = `${this.coordinatesEvent.y}px`
 
-        console.log('Start --> ', event.currentTarget)
+        // console.log('Start --> ', event.currentTarget)
 
         document.addEventListener('pointermove', this.moving)
     }
-
     // Ф-я двигает элемент
     moveAt(pageX, pageY) {
         this.startClick.target.style.left = `${pageX - this.shiftX}px`
         this.startClick.target.style.top = `${pageY - this.shiftY}px`
     }
-
     // Ф-я для event pointermove, двигать наш элемент
     moving(event) {
         this.moveAt(event.pageX, event.pageY)
@@ -207,9 +219,10 @@ class Routes {
 
         // Если мы еще не были над нужным элементом
         if (this.currentDroppAble != droppableBelow) {
+            this.ifRoutesHaveChanged = true
             // Если уже были и ушли, удаляем действия
             if (this.currentDroppAble) {
-                console.log('We leave')
+                // console.log('We leave')
             }
             // Если нашли нужный элемент, добавляем в currentDroppAble
             this.currentDroppAble = droppableBelow
@@ -219,13 +232,12 @@ class Routes {
                 // Индекс элемента на который будем дропать
                 this.droppableBelowIndex = Array.from(droppableBelow.parentNode.children).indexOf(droppableBelow);
                 
-                console.log('We came')
-                console.log(this.eventIndex, this.droppableBelowIndex, this.flag)
+                // console.log('We came')
+                // console.log(this.eventIndex, this.droppableBelowIndex, this.ifRoutesHaveChanged)
                 this.dropOnElement(this.eventIndex, this.droppableBelowIndex)
             }
         }
     }
-
     // Ф-я для event Pointerup
     dropped() {
         if (!this.startClick) return
@@ -236,14 +248,17 @@ class Routes {
         this.startClick.target.style.top = '0'
         this.startClick.target.style.left = '0'
 
-        this.placeholderNode.remove()
-        this.replaceRoutes(this.startClick.target)
+        // Проверка, что бы карта рендерилась без изменений маршрута
+        if (this.ifRoutesHaveChanged) {
+            this.placeholderNode.remove()
+            this.replaceRoutes()
+            this.ifRoutesHaveChanged = false
+        }
+        this.startClick.target.style.cursor = 'grab'
     }
-
     dropOnElement(drag, drop) {
-        
         if (drag < drop) {
-            this.flag = true
+            this.ifRoutesHaveChanged = true
             // console.log(drag, drop)
             this.currentDroppAble.insertAdjacentElement('afterend', this.placeholderNode)
             this.eventIndex = this.eventIndex + 1
@@ -257,14 +272,19 @@ class Routes {
             this.currentDroppAble.insertAdjacentElement('beforebegin', this.placeholderNode)
         }
     }
-    replaceRoutes(event) {
+    replaceRoutes() {
         this.routesArray = [];
-        let newRoute = Array.from(event.parentNode.children)
+        let newRoute = Array.from(this.routesNode.children)
         newRoute.map((e) => {
-            this.routesArray.push(e.children[0].innerText)
+            this.routesArray.push(e.querySelector('.routeValue').value)
         })
         console.log(this.routesArray)
         this.changeRoutes()
+    }
+    deleteRoute() {
+        event.target.closest('.route').remove()
+        this.replaceRoutes()
+        console.log("delete --> ")
     }
 
 }
@@ -273,10 +293,14 @@ class Routes {
 const routeMarkup = (name) => {
     return `
         <div class="route" >
-            <span>${name}</span>
-            <button class="close" >Close</button>
+            <div class="dragZone" ></div>
+            <div class="routeZone" >
+                <input class="routeValue" type="text" value="${name}">
+                <button class="close" >Close</button>
+            </div>
         </div>
     `
+    // <input class="routeValue" type="text" value="${name}">
 }
 
 
