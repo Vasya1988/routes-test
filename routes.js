@@ -17,7 +17,7 @@ class Routes {
         this.container = element
 
         // Array with routes
-        this.routesArray = [] // 'Пушкино', 'Москва', 'Подольск'
+        this.routesArray = ['Пушкино', 'Москва', 'Подольск'] // 
 
         this.ifRoutesHaveChanged = false
 
@@ -151,7 +151,6 @@ class Routes {
             })
             return
         }
-        console.log(event.target)
         // Добавляем 6px, при клике в верхней части блока с маршрутом, мышка может выходить за пределы блока (из-за margin 6px), когда это происходит, отменяем все дальнейшие события
         if (event.pageY < event.target.getBoundingClientRect().top + 6) return
 
@@ -184,6 +183,8 @@ class Routes {
         // Настраиваем движущийся элемент и добавляем в body
         this.startClick.target.style.position = 'absolute'
         this.startClick.target.style.zIndex = 1000
+        this.startClick.target.style.width = '80%'
+
         document.body.append(this.startClick.target)
 
         // Задаем координаты элементу, который двигаем
@@ -202,6 +203,10 @@ class Routes {
     }
     // Ф-я для event pointermove, двигать наш элемент
     moving(event) {
+        if (event.clientX < 0 || event.clientY < 0) {
+            this.dropped()
+            return
+        }
         this.moveAt(event.pageX, event.pageY)
         // Скрываем движущийся элемент, что бы получить координаты
         // элемента над которым мы проходим
@@ -250,6 +255,7 @@ class Routes {
         this.startClick.target.style.position = 'inherit'
         this.startClick.target.style.top = '0'
         this.startClick.target.style.left = '0'
+        this.startClick.target.style.width = '100%'
 
         // Проверка, что бы карта рендерилась без изменений маршрута
         if (this.ifRoutesHaveChanged) {
