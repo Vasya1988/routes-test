@@ -49,7 +49,14 @@
         border-top: 2px solid
         border-bottom: 2px solid
         pointer-events: none
-        
+        @media screen and (min-width: 481px) and (max-width: 768px) // Tablret
+            height: 16px
+            border-top: 4px solid grey
+            border-bottom: 4px solid grey
+        @media screen and (min-width: 320px) and (max-width: 480px)
+            height: 10px
+            border-top: 3px solid grey
+            border-bottom: 3px solid grey
     .dragZone:hover
         cursor: grab
     .routeZone
@@ -67,14 +74,30 @@
         background-color: #fff
         user-select: none
         transition: all 0.35s ease 0s
+        @media screen and (min-width: 481px) and (max-width: 768px) // Tablret
+            width: 76%
+            height: 40px
+            .routeValue
+                font-size: 100%
+        @media screen and (min-width: 320px) and (max-width: 480px)
+            .routeValue
+                font-size: 100%
+            .close
+                width: 30%
+        @media screen and (min-width: 320px) and (max-width: 480px)
+            width: 76%
+            height: 40px
     .routeInput
     input
         width: 100%
         border: none
         // pointer-events: none
+    @media screen and (min-width: 769px) and (max-width: 1023px) // Laptop
     @media screen and (min-width: 481px) and (max-width: 768px) // Tablret
         width: inherit
+        height: 10vh
     @media screen and (min-width: 320px) and (max-width: 480px)
+        height: 10vh
         width: inherit
 .placeholder
     width: 80%

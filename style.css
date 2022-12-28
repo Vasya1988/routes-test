@@ -53,6 +53,16 @@
     border-top: 2px solid;
     border-bottom: 2px solid;
     pointer-events: none; }
+    @media screen and (min-width: 481px) and (max-width: 768px) {
+      .route .dragZone, .routeClone .dragZone {
+        height: 16px;
+        border-top: 4px solid grey;
+        border-bottom: 4px solid grey; } }
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      .route .dragZone, .routeClone .dragZone {
+        height: 10px;
+        border-top: 3px solid grey;
+        border-bottom: 3px solid grey; } }
   .route .dragZone:hover, .routeClone .dragZone:hover {
     cursor: grab; }
   .route .routeZone, .routeClone .routeZone {
@@ -70,14 +80,31 @@
     background-color: #fff;
     user-select: none;
     transition: all 0.35s ease 0s; }
+    @media screen and (min-width: 481px) and (max-width: 768px) {
+      .route .routeZone, .routeClone .routeZone {
+        width: 76%;
+        height: 40px; }
+        .route .routeZone .routeValue, .routeClone .routeZone .routeValue {
+          font-size: 100%; } }
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      .route .routeZone .routeValue, .routeClone .routeZone .routeValue {
+        font-size: 100%; }
+      .route .routeZone .close, .routeClone .routeZone .close {
+        width: 30%; } }
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+      .route .routeZone, .routeClone .routeZone {
+        width: 76%;
+        height: 40px; } }
   .route input, .routeClone input {
     width: 100%;
     border: none; }
   @media screen and (min-width: 481px) and (max-width: 768px) {
     .route, .routeClone {
-      width: inherit; } }
+      width: inherit;
+      height: 10vh; } }
   @media screen and (min-width: 320px) and (max-width: 480px) {
     .route, .routeClone {
+      height: 10vh;
       width: inherit; } }
 
 .placeholder {
