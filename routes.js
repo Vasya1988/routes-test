@@ -151,6 +151,8 @@ class Routes {
             })
             return
         }
+        this.currentWidth = event.target
+        console.log(this.currentWidth.style)
         // Добавляем 6px, при клике в верхней части блока с маршрутом, мышка может выходить за пределы блока (из-за margin 6px), когда это происходит, отменяем все дальнейшие события
         if (event.pageY < event.target.getBoundingClientRect().top + 6) return
 
@@ -183,7 +185,10 @@ class Routes {
         // Настраиваем движущийся элемент и добавляем в body
         this.startClick.target.style.position = 'absolute'
         this.startClick.target.style.zIndex = 1000
-        this.startClick.target.style.width = '80%'
+        // min-width: 769px
+        window.outerWidth < 769 ? this.startClick.target.style.width = '80%' : true
+        console.log(window.outerWidth)
+        
 
         document.body.append(this.startClick.target)
 
@@ -255,7 +260,7 @@ class Routes {
         this.startClick.target.style.position = 'inherit'
         this.startClick.target.style.top = '0'
         this.startClick.target.style.left = '0'
-        this.startClick.target.style.width = '100%'
+        // this.startClick.target.style.width = 'auto'
 
         // Проверка, что бы карта рендерилась без изменений маршрута
         if (this.ifRoutesHaveChanged) {

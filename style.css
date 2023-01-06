@@ -31,7 +31,8 @@
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end; }
+    justify-content: flex-end;
+    touch-action: none; }
   @media screen and (min-width: 481px) and (max-width: 768px) {
     .nav {
       margin: 10px 0 0 0;
@@ -101,10 +102,10 @@
   @media screen and (min-width: 481px) and (max-width: 768px) {
     .route, .routeClone {
       width: inherit;
-      height: 10vh; } }
+      height: 6vh; } }
   @media screen and (min-width: 320px) and (max-width: 480px) {
     .route, .routeClone {
-      height: 10vh;
+      height: 8vh;
       width: inherit; } }
 
 .placeholder {
@@ -113,5 +114,15 @@
   background-color: #ebebeb;
   border-radius: 10px;
   margin: 6px 0; }
+  @media screen and (min-width: 481px) and (max-width: 768px) {
+    .placeholder {
+      width: 76%;
+      height: 40px; }
+      .placeholder .routeValue {
+        font-size: 100%; } }
+  @media screen and (min-width: 320px) and (max-width: 480px) {
+    .placeholder {
+      width: 76%;
+      height: 40px; } }
 
 /*# sourceMappingURL=style.css.map */

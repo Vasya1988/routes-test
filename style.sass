@@ -27,6 +27,7 @@
         display: flex
         flex-wrap: wrap
         justify-content: flex-end
+        touch-action: none
     @media screen and (min-width: 1201px) // Extra large
     @media screen and (min-width: 1024px) and (max-width: 1200px) // Desktop
     @media screen and (min-width: 769px) and (max-width: 1023px) // Laptop
@@ -95,9 +96,9 @@
     @media screen and (min-width: 769px) and (max-width: 1023px) // Laptop
     @media screen and (min-width: 481px) and (max-width: 768px) // Tablret
         width: inherit
-        height: 10vh
+        height: 6vh
     @media screen and (min-width: 320px) and (max-width: 480px)
-        height: 10vh
+        height: 8vh
         width: inherit
 .placeholder
     width: 80%
@@ -105,6 +106,12 @@
     background-color: #ebebeb
     border-radius: 10px
     margin: 6px 0
+    @media screen and (min-width: 481px) and (max-width: 768px) // Tablret
+        width: 76%
+        height: 40px
+        .routeValue
+            font-size: 100%
     @media screen and (min-width: 320px) and (max-width: 480px)
-
+        width: 76%
+        height: 40px
         
