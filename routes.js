@@ -49,7 +49,7 @@ class Routes {
             `
                 <div class=${classes.container}>
                     <div class=${classes.navigation}>
-                        <input type="text" class=${classes.enterRoute}>
+                        <input type="text" placeholder="Enter your city" class=${classes.enterRoute}>
                         <div class=${classes.routes}>
                         </div>
                     </div>
