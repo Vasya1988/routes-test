@@ -9,7 +9,8 @@ const classes = {
     activeUp: 'route--active-up',
     activeDown: 'route--active-down',
     placeholder: 'placeholder',
-    buttonClose: 'close'
+    buttonClose: 'close',
+    dragging: 'dragging'
 }
 class Routes {
     constructor(element, option = {}) {
@@ -186,8 +187,8 @@ class Routes {
         this.startClick.target.style.position = 'absolute'
         this.startClick.target.style.zIndex = 1000
         // min-width: 769px
-        window.outerWidth < 769 ? this.startClick.target.style.width = '80%' : true
-        console.log(window.outerWidth)
+        window.innerWidth < 769 ? this.startClick.target.style.width = '80%' : true
+        console.dir(window.innerWidth)
         
 
         document.body.append(this.startClick.target)
@@ -260,6 +261,7 @@ class Routes {
         this.startClick.target.style.position = 'inherit'
         this.startClick.target.style.top = '0'
         this.startClick.target.style.left = '0'
+        this.startClick.target.style.width = '100%'
         // this.startClick.target.style.width = 'auto'
 
         // Проверка, что бы карта рендерилась без изменений маршрута
