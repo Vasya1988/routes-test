@@ -42,7 +42,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    touch-action: none; }
+    touch-action: none;
+    user-select: none; }
   @media screen and (min-width: 481px) and (max-width: 768px) {
     .nav {
       margin: 10px 0 0 0;
